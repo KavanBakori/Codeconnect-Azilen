@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/clike/clike"; // Import C++ mode
 import "codemirror/theme/dracula.css";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/closebrackets";
@@ -14,21 +14,19 @@ function Editor({ socketRef, roomId, onCodeChange }) {
       const editor = CodeMirror.fromTextArea(
         document.getElementById("realtimeEditor"),
         {
-          mode: { name: "javascript", json: true },
+          mode: "text/x-c++src", // Set mode to C++
           theme: "dracula",
           autoCloseTags: true,
           autoCloseBrackets: true,
           lineNumbers: true,
         }
       );
-      // for sync the code
       editorRef.current = editor;
 
       editor.setSize(null, "100%");
       editorRef.current.on("change", (instance, changes) => {
-        // console.log("changes", instance ,  changes );
         const { origin } = changes;
-        const code = instance.getValue(); // code has value which we write
+        const code = instance.getValue();
         onCodeChange(code);
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
@@ -57,7 +55,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
   }, [socketRef.current]);
 
   return (
-    <div style={{ height: "600px" }}>
+    <div style={{ height: "100%" }}>
       <textarea id="realtimeEditor"></textarea>
     </div>
   );
